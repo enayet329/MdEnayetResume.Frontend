@@ -54,13 +54,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   suggestions: string[] = [
   "Give me a 60‑second intro to Enayet",
   "What are your top technical skills?",
-  "Summarize your experience with .NET and Clean Architecture",
-  "How did you integrate Sabre and Travelport?",
-  "Explain a microservice you designed end‑to‑end",
-  "How do you use Apache Kafka and why?",
-  "Describe your work with TimescaleDB/PostgreSQL",
-  "How did you implement AWS S3 logging and file management?",
-  "Walk me through a tricky bug you solved and the outcome",
   "What recent R&D have you done?",
   "What are you learning right now?",
   "What domains interest you next (OTA, fintech, etc.)?",
