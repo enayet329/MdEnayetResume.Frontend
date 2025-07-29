@@ -45,6 +45,7 @@ interface ChatMessage {
 export class ChatComponent implements OnInit, AfterViewChecked {
   @ViewChild('messagesContainer') messagesContainer!: ElementRef;
   @ViewChild('messageInput') messageInput!: ElementRef;
+  @ViewChild('typingIndicator') typingIndicator!: ElementRef;
   userMessage: string = '';
   messages: ChatMessage[] = [];
   isTyping: boolean = false;
@@ -52,13 +53,13 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   currentStreamingMessage: ChatMessage | null = null;
   selectedTab: number = 0;
   suggestions: string[] = [
-  "Give me a 60‑second intro to Enayet",
-  "What are your top technical skills?",
-  "What recent R&D have you done?",
-  "What are you learning right now?",
-  "What domains interest you next (OTA, fintech, etc.)?",
-  "বাংলায় নিজের সম্পর্কে সংক্ষেপে বলুন",
-  "আপনার পছন্দের টেক স্ট্যাক কী এবং কেন?"
+    "Give me a 60-second intro to Enayet",
+    "What are your top technical skills?",
+    "What recent R&D have you done?",
+    "What are you learning right now?",
+    "What domains interest you next (OTA, fintech, etc.)?",
+    "বাংলায় নিজের সম্পর্কে সংক্ষেপে বলুন",
+    "আপনার পছন্দের টেক স্ট্যাক কী এবং কেন?"
   ];
 
   // Enhanced animations
@@ -82,6 +83,11 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     this.scrollToBottom();
   }
 
+  @HostListener('window:resize')
+  onResize() {
+    this.adjustForKeyboard();
+  }
+
   trackByMessageId(index: number, message: ChatMessage): string {
     return message.id;
   }
@@ -94,6 +100,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     if (this.messagesContainer) {
       const container = this.messagesContainer.nativeElement;
       container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+    }
+    if (this.isTyping && this.typingIndicator) {
+      this.typingIndicator.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
   }
 
@@ -250,6 +259,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   adjustForKeyboard(): void {
     setTimeout(() => {
       this.scrollToBottom();
+      if (this.messageInput) {
+        this.messageInput.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }
     }, 300); // Delay to allow keyboard to open
   }
 }

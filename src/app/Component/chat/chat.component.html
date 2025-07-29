@@ -1,4 +1,3 @@
-<!-- chat.component.html -->
 <div class="chat-container">
   <!-- Multi-layer Background Animation System -->
   <div class="background-animation">
@@ -85,7 +84,7 @@
     </div>
 
     <!-- Typing Indicator -->
-    <div *ngIf="isTyping" class="message-wrapper ai-message typing-message">
+    <div *ngIf="isTyping" class="message-wrapper ai-message typing-message" #typingIndicator>
       <div class="message-avatar">
         <div class="avatar-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
