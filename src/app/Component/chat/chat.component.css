@@ -342,7 +342,7 @@
 }
 
 .messages-container {
-  flex: 1;
+  flex: 1 1 auto;
   overflow-y: auto;
   padding: 1rem;
   display: flex;
@@ -480,13 +480,14 @@
   height: 1.2em;
   background: #feca57;
   margin-left: 2px;
-  animation: blink 1s infinite;
+  animation: cursorPulse 1s infinite ease-in-out;
   box-shadow: 0 0 5px #feca57;
 }
 
-@keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
+@keyframes cursorPulse {
+  0% { opacity: 0.5; transform: scaleY(1); box-shadow: 0 0 5px #feca57; }
+  50% { opacity: 1; transform: scaleY(1.2); box-shadow: 0 0 10px #feca57; }
+  100% { opacity: 0.5; transform: scaleY(1); box-shadow: 0 0 5px #feca57; }
 }
 
 .typing-message .message-bubble {
@@ -543,6 +544,7 @@
   z-index: 10;
   position: relative;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
 }
 
 .input-wrapper {
@@ -650,6 +652,42 @@
   background: rgba(255, 255, 255, 0.6);
 }
 
+.suggestions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin: 2rem 0;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.suggestion-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.suggestion {
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  color: white;
+  font-size: 0.9rem;
+  max-width: 80%;
+  text-align: center;
+}
+
+.suggestion:hover {
+  transform: translateY(-2px) scale(1.05);
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
 @media (max-width: 768px) {
   .chat-container {
     max-width: 100vw;
@@ -719,6 +757,11 @@
     width: 1.5px;
     height: 1.5px;
     animation-duration: 4.5s, 38s;
+  }
+
+  .suggestion {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
   }
 }
 
@@ -796,5 +839,14 @@
     width: 1px;
     height: 1px;
     animation-duration: 3.5s, 30s;
+  }
+
+  .suggestion {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .suggestion-list {
+    flex-direction: column;
   }
 }

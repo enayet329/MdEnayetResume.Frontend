@@ -74,6 +74,16 @@
       </div>
     </div>
 
+    <!-- Suggestions -->
+    <div class="suggestions" *ngIf="messages.length === 1">
+      <div class="suggestion-title">Try one of these to start:</div>
+      <div class="suggestion-list">
+        <div class="suggestion" *ngFor="let suggestion of suggestions" (click)="sendSuggestion(suggestion)">
+          {{ suggestion }}
+        </div>
+      </div>
+    </div>
+
     <!-- Typing Indicator -->
     <div *ngIf="isTyping" class="message-wrapper ai-message typing-message">
       <div class="message-avatar">
@@ -116,6 +126,7 @@
           #messageInput
           [(ngModel)]="userMessage"
           (keypress)="onKeyPress($event)"
+          (focus)="adjustForKeyboard()"
           placeholder="Ask, write or search for anything..."
           [disabled]="isSending"
           maxlength="500"

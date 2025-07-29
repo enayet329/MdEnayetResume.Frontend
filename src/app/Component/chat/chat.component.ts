@@ -51,6 +51,31 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   isSending: boolean = false;
   currentStreamingMessage: ChatMessage | null = null;
   selectedTab: number = 0;
+  suggestions: string[] = [
+    "Give me a 60‑second intro to Enayet",
+  "What are your top technical skills?",
+  "Summarize your experience with .NET and Clean Architecture",
+  "What did you build for Akij Air (B2B/B2C)?",
+  "How did you integrate Sabre and Travelport?",
+  "Explain a microservice you designed end‑to‑end",
+  "How do you use Apache Kafka and why?",
+  "Describe your work with TimescaleDB/PostgreSQL",
+  "How did you implement AWS S3 logging and file management?",
+  "Show 3 flagship projects with your impact",
+  "What’s your approach to API design and versioning (REST/GraphQL)?",
+  "How do you ensure reliability: testing, validation, error handling?",
+  "Walk me through a tricky bug you solved and the outcome",
+  "What recent R&D have you done?",
+  "What are you learning right now?",
+  "How do you collaborate with CTOs and team leads?",
+  "Share measurable achievements (performance, cost, time saved)",
+  "What domains interest you next (OTA, fintech, etc.)?",
+  "Give me a recruiter‑friendly 30‑second pitch",
+  "How can I contact you and download your resume?",
+  "বাংলায় নিজের সম্পর্কে সংক্ষেপে বলুন",
+  "আপনার পছন্দের টেক স্ট্যাক কী এবং কেন?",
+  "Generate a short LinkedIn ‘About’ for me based on your profile"
+  ];
 
   // Enhanced animations
   particles: number[] = Array.from({length: 60}, (_, i) => i);
@@ -61,7 +86,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   constructor(private chatService: ChatService, private sanitizer: DomSanitizer) {}
 
   ngOnInit() {
-    this.setHeight();
     this.messages.push({
       id: this.generateId(),
       content: "Hey vai! I'm Enayet, a backend dev from Dhaka. What's up? 😎",
@@ -72,18 +96,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   ngAfterViewChecked() {
     this.scrollToBottom();
-  }
-
-  @HostListener('window:resize')
-  onResize() {
-    this.setHeight();
-  }
-
-  private setHeight() {
-    const container = document.querySelector('.chat-container') as HTMLElement;
-    if (container) {
-      container.style.height = `${window.innerHeight}px`;
-    }
   }
 
   trackByMessageId(index: number, message: ChatMessage): string {
@@ -127,6 +139,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       this.isTyping = false;
       this.messages.push(aiMsg);
       this.currentStreamingMessage = aiMsg;
+      this.scrollToBottom();
     }, 800);
 
     const req: ChatRequest = { userMessage: userMessageContent };
@@ -181,31 +194,39 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   copyMessage(content: string): void {
     navigator.clipboard.writeText(content);
   }
+
   startNewChat(): void {
-      this.messages = [
-        {
-          id: this.generateId(),
-          content: "Hey vai! I'm Enayet, a backend dev from Dhaka. What's up? 😎",
-          isUser: false,
-          timestamp: new Date()
-        }
-      ];
-      this.userMessage = '';
-      this.isTyping = false;
-      this.isSending = false;
-      this.currentStreamingMessage = null;
-      this.selectedTab = 0;
-      setTimeout(() => {
-        if (this.messageInput) {
-          this.messageInput.nativeElement.focus();
-        }
-      }, 100);
-    }
+    this.messages = [
+      {
+        id: this.generateId(),
+        content: "Hey vai! I'm Enayet, a backend dev from Dhaka. What's up? 😎",
+        isUser: false,
+        timestamp: new Date()
+      }
+    ];
+    this.userMessage = '';
+    this.isTyping = false;
+    this.isSending = false;
+    this.currentStreamingMessage = null;
+    this.selectedTab = 0;
+    setTimeout(() => {
+      if (this.messageInput) {
+        this.messageInput.nativeElement.focus();
+      }
+    }, 100);
+  }
+
   rerunMessage(message: ChatMessage): void {
     this.userMessage = message.content;
     this.sendMessage();
   }
-getParticlePosition(index: number): number {
+
+  sendSuggestion(suggestion: string): void {
+    this.userMessage = suggestion;
+    this.sendMessage();
+  }
+
+  getParticlePosition(index: number): number {
     return Math.random() * 100;
   }
 
@@ -242,5 +263,9 @@ getParticlePosition(index: number): number {
     return 3 + Math.random() * 4;
   }
 
-
+  adjustForKeyboard(): void {
+    setTimeout(() => {
+      this.scrollToBottom();
+    }, 300); // Delay to allow keyboard to open
+  }
 }
