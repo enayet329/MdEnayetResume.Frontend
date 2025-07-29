@@ -29,6 +29,14 @@
          [style.animation-delay.s]="-i * 2"
          [style.animation-duration.s]="getShapeDuration(i)">
     </div>
+
+    <!-- Twinkling Stars -->
+    <div class="star" 
+         *ngFor="let star of stars; let i = index"
+         [style.left.%]="getStarPosition(i)"
+         [style.animation-delay.s]="-i * 0.8"
+         [style.animation-duration.s]="getStarDuration(i)">
+    </div>
   </div>
 
   <!-- Header -->

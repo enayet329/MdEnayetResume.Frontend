@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChatService } from '../../Services/chat.service';
@@ -36,8 +36,8 @@ interface ChatMessage {
   animations: [
     trigger('slideIn', [
       transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(20px)' }),
-        animate('0.5s ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+        style({ opacity: 0, transform: 'translateY(30px) scale(0.95)' }),
+        animate('0.6s ease-out', style({ opacity: 1, transform: 'translateY(0) scale(1)' }))
       ])
     ])
   ]
@@ -52,15 +52,16 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   currentStreamingMessage: ChatMessage | null = null;
   selectedTab: number = 0;
 
-  // Particle and bubble animations
-  particles: number[] = Array.from({length: 50}, (_, i) => i);
-  bubbles: number[] = Array.from({length: 20}, (_, i) => i);
-  shapes: number[] = Array.from({length: 10}, (_, i) => i);
-
+  // Enhanced animations
+  particles: number[] = Array.from({length: 60}, (_, i) => i);
+  bubbles: number[] = Array.from({length: 25}, (_, i) => i);
+  shapes: number[] = Array.from({length: 15}, (_, i) => i);
+  stars: number[] = Array.from({length: 50}, (_, i) => i);
 
   constructor(private chatService: ChatService, private sanitizer: DomSanitizer) {}
 
   ngOnInit() {
+    this.setHeight();
     this.messages.push({
       id: this.generateId(),
       content: "Hey vai! I'm Enayet, a backend dev from Dhaka. What's up? 😎",
@@ -71,6 +72,18 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   ngAfterViewChecked() {
     this.scrollToBottom();
+  }
+
+  @HostListener('window:resize')
+  onResize() {
+    this.setHeight();
+  }
+
+  private setHeight() {
+    const container = document.querySelector('.chat-container') as HTMLElement;
+    if (container) {
+      container.style.height = `${window.innerHeight}px`;
+    }
   }
 
   trackByMessageId(index: number, message: ChatMessage): string {
@@ -84,7 +97,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   private scrollToBottom(): void {
     if (this.messagesContainer) {
       const container = this.messagesContainer.nativeElement;
-      container.scrollTop = container.scrollHeight;
+      container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
     }
   }
 
@@ -114,7 +127,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       this.isTyping = false;
       this.messages.push(aiMsg);
       this.currentStreamingMessage = aiMsg;
-    }, 1000);
+    }, 800);
 
     const req: ChatRequest = { userMessage: userMessageContent };
     this.chatService.streamChat(req).subscribe({
@@ -197,7 +210,7 @@ getParticlePosition(index: number): number {
   }
 
   getParticleDuration(index: number): number {
-    return 15 + Math.random() * 10;
+    return 12 + Math.random() * 12;
   }
 
   getBubblePosition(index: number): number {
@@ -205,7 +218,7 @@ getParticlePosition(index: number): number {
   }
 
   getBubbleDuration(index: number): number {
-    return 20 + Math.random() * 15;
+    return 18 + Math.random() * 18;
   }
 
   getShapePosition(index: number): number {
@@ -213,12 +226,20 @@ getParticlePosition(index: number): number {
   }
 
   getShapeDuration(index: number): number {
-    return 30 + Math.random() * 10;
+    return 25 + Math.random() * 15;
   }
 
   getShapeClass(index: number): string {
     const shapes = ['triangle', 'square', 'diamond'];
     return `shape ${shapes[Math.floor(Math.random() * shapes.length)]}`;
+  }
+
+  getStarPosition(index: number): number {
+    return Math.random() * 100;
+  }
+
+  getStarDuration(index: number): number {
+    return 3 + Math.random() * 4;
   }
 
 
