@@ -1,5 +1,3 @@
-// chat.component.ts
-
 import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -10,6 +8,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTabsModule } from '@angular/material/tabs';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 interface ChatMessage {
   id: string;
@@ -28,7 +28,8 @@ interface ChatMessage {
     MatInputModule,
     MatButtonModule,
     MatCardModule,
-    MatIconModule
+    MatIconModule,
+    MatTabsModule
   ],
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css'],
@@ -49,18 +50,17 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   isTyping: boolean = false;
   isSending: boolean = false;
   currentStreamingMessage: ChatMessage | null = null;
+  selectedTab: number = 0;
 
-  constructor(private chatService: ChatService) {}
+  constructor(private chatService: ChatService, private sanitizer: DomSanitizer) {}
 
   ngOnInit() {
     this.messages.push({
       id: this.generateId(),
-      content: "Hey! I'm Enayet, a software developer from Dhaka. What's up?",
+      content: "Hey vai! I'm Enayet, a backend dev from Dhaka. What's up? 😎",
       isUser: false,
       timestamp: new Date()
     });
-    this.createParticles();
-    setInterval(() => this.createParticles(), 10000);
   }
 
   ngAfterViewChecked() {
@@ -82,27 +82,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  private createParticles(): void {
-    const particlesContainer = document.querySelector('.bg-particles');
-    if (!particlesContainer) return;
-    for (let i = 0; i < 15; i++) {
-      setTimeout(() => {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.width = particle.style.height = (Math.random() * 4 + 2) + 'px';
-        particle.style.animationDuration = (Math.random() * 15 + 10) + 's';
-        particle.style.animationDelay = Math.random() * 5 + 's';
-        particlesContainer.appendChild(particle);
-        setTimeout(() => {
-          if (particle.parentNode) {
-            particle.parentNode.removeChild(particle);
-          }
-        }, 25000);
-      }, i * 100);
-    }
-  }
-
   sendMessage(): void {
     if (!this.userMessage.trim() || this.isSending) return;
     const userMessageContent = this.userMessage.trim();
@@ -116,6 +95,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     this.userMessage = '';
     this.isSending = true;
     this.isTyping = true;
+
     const aiMsg: ChatMessage = {
       id: this.generateId(),
       content: '',
@@ -123,23 +103,25 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       timestamp: new Date(),
       isStreaming: true
     };
+
     setTimeout(() => {
       this.isTyping = false;
       this.messages.push(aiMsg);
       this.currentStreamingMessage = aiMsg;
     }, 1000);
+
     const req: ChatRequest = { userMessage: userMessageContent };
     this.chatService.streamChat(req).subscribe({
-      next: (chunks: string[]) => {
-        const fullText = chunks.join('').trim();
+      next: (chunk: string) => {
         if (this.currentStreamingMessage) {
-          this.currentStreamingMessage.content = fullText;
+          this.currentStreamingMessage.content += chunk;
+          this.scrollToBottom();
         }
       },
       error: (err) => {
         console.error('Chat error:', err);
         if (this.currentStreamingMessage) {
-          this.currentStreamingMessage.content = '⚠️ Sorry, something went wrong. Please try again.';
+          this.currentStreamingMessage.content = '⚠️ Sorry, something went wrong, vai. Try again! 😅';
           this.currentStreamingMessage.isStreaming = false;
         }
         this.isSending = false;
@@ -166,5 +148,50 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       event.preventDefault();
       this.sendMessage();
     }
+  }
+
+  renderMarkdown(content: string): SafeHtml {
+    content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    content = content.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    content = content.replace(/`(.*?)`/g, '<code>$1</code>');
+    content = content.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+    content = content.replace(/\n/g, '<br>');
+    return this.sanitizer.bypassSecurityTrustHtml(content);
+  }
+
+  copyMessage(content: string): void {
+    navigator.clipboard.writeText(content);
+  }
+  startNewChat(): void {
+      this.messages = [
+        {
+          id: this.generateId(),
+          content: "Hey vai! I'm Enayet, a backend dev from Dhaka. What's up? 😎",
+          isUser: false,
+          timestamp: new Date()
+        }
+      ];
+      this.userMessage = '';
+      this.isTyping = false;
+      this.isSending = false;
+      this.currentStreamingMessage = null;
+      this.selectedTab = 0;
+      setTimeout(() => {
+        if (this.messageInput) {
+          this.messageInput.nativeElement.focus();
+        }
+      }, 100);
+    }
+  rerunMessage(message: ChatMessage): void {
+    this.userMessage = message.content;
+    this.sendMessage();
+  }
+
+  pinMessage(message: ChatMessage): void {
+    console.log('Pinned:', message);
+  }
+
+  feedback(message: ChatMessage, positive: boolean): void {
+    console.log('Feedback:', positive ? 'Up' : 'Down', message);
   }
 }

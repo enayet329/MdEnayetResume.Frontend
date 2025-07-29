@@ -1,7 +1,10 @@
-<!-- chat.component.html -->
-
+<!-- Background Particle Layer -->
 <div class="bg-particles"></div>
+
+<!-- Chat Container -->
 <div class="chat-container">
+
+  <!-- Header -->
   <div class="chat-header">
     <div class="ai-status">
       <div class="status-indicator"></div>
@@ -10,22 +13,44 @@
         <div class="ai-subtitle">Software Developer • Online</div>
       </div>
     </div>
+    <button class="new-chat-button" (click)="startNewChat()">New Chat</button>
   </div>
+
+  <!-- Message List -->
   <div class="messages-container" #messagesContainer>
     <div *ngFor="let message of messages; trackBy: trackByMessageId"
          class="message"
          [class.user]="message.isUser"
          [class.ai]="!message.isUser"
          [@slideIn]>
-      <div class="message-avatar">
-        {{ message.isUser ? '🧑' : '🤖' }}
+      <div class="message-avatar">{{ message.isUser ? '🧑' : '🤖' }}</div>
+      <div class="message-content-wrapper">
+        <div class="message-content" [class.streaming-text]="message.isStreaming">
+          <div [innerHTML]="renderMarkdown(message.content)"></div>
+          <span *ngIf="message.isStreaming" class="cursor"></span>
+        </div>
+        <div class="message-actions" *ngIf="!message.isStreaming">
+          <button mat-icon-button (click)="copyMessage(message.content)" title="Copy">
+            <mat-icon>content_copy</mat-icon>
+          </button>
+          <button mat-icon-button (click)="rerunMessage(message)" title="Re-run">
+            <mat-icon>refresh</mat-icon>
+          </button>
+          <button mat-icon-button (click)="pinMessage(message)" title="Pin">
+            <mat-icon>push_pin</mat-icon>
+          </button>
+          <button mat-icon-button (click)="feedback(message, true)" title="Thumbs Up">
+            <mat-icon>thumb_up</mat-icon>
+          </button>
+          <button mat-icon-button (click)="feedback(message, false)" title="Thumbs Down">
+            <mat-icon>thumb_down</mat-icon>
+          </button>
+        </div>
       </div>
-      <div class="message-content"
-           [class.streaming-text]="message.isStreaming">
-        {{ message.content }}
-        <span *ngIf="message.isStreaming" class="cursor"></span>
-      </div>
+      <div class="message-timestamp">{{ message.timestamp | date:'shortTime' }}</div>
     </div>
+
+    <!-- Typing Indicator -->
     <div *ngIf="isTyping" class="typing-indicator" [@slideIn]>
       <div class="message-avatar">🤖</div>
       <div class="typing-dots">
@@ -35,25 +60,24 @@
       </div>
     </div>
   </div>
+
+  <!-- Input Area -->
   <div class="input-container">
-    <mat-card class="input-wrapper">
-      <mat-form-field class="message-input-field">
-        <textarea matInput
-                  #messageInput
-                  [(ngModel)]="userMessage"
-                  (keypress)="onKeyPress($event)"
-                  placeholder="Type your message..."
-                  [disabled]="isSending"
-                  maxlength="500"
-                  rows="1"></textarea>
-      </mat-form-field>
-      <button mat-fab
+    <mat-form-field class="message-input-field" appearance="fill">
+      <textarea matInput
+                #messageInput
+                [(ngModel)]="userMessage"
+                (keypress)="onKeyPress($event)"
+                placeholder="Type your message..."
+                [disabled]="isSending"
+                maxlength="500"
+                rows="1"></textarea>
+      <button mat-icon-button matSuffix
               color="primary"
-              class="send-button"
               (click)="sendMessage()"
               [disabled]="!userMessage.trim() || isSending">
         <mat-icon>send</mat-icon>
       </button>
-    </mat-card>
+    </mat-form-field>
   </div>
 </div>
