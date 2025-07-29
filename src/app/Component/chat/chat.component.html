@@ -1,11 +1,59 @@
+<!-- chat.component.html -->
 
-<div class="chat-box">
-  <div *ngFor="let msg of messages" class="chat-message">
-    {{ msg }}
+<div class="bg-particles"></div>
+<div class="chat-container">
+  <div class="chat-header">
+    <div class="ai-status">
+      <div class="status-indicator"></div>
+      <div>
+        <div class="ai-title">Enayet AI</div>
+        <div class="ai-subtitle">Software Developer • Online</div>
+      </div>
+    </div>
   </div>
-
-  <div class="chat-input">
-    <input [(ngModel)]="userMessage" placeholder="Say something..." (keydown.enter)="sendMessage()" />
-    <button (click)="sendMessage()">Send</button>
+  <div class="messages-container" #messagesContainer>
+    <div *ngFor="let message of messages; trackBy: trackByMessageId"
+         class="message"
+         [class.user]="message.isUser"
+         [class.ai]="!message.isUser"
+         [@slideIn]>
+      <div class="message-avatar">
+        {{ message.isUser ? '🧑' : '🤖' }}
+      </div>
+      <div class="message-content"
+           [class.streaming-text]="message.isStreaming">
+        {{ message.content }}
+        <span *ngIf="message.isStreaming" class="cursor"></span>
+      </div>
+    </div>
+    <div *ngIf="isTyping" class="typing-indicator" [@slideIn]>
+      <div class="message-avatar">🤖</div>
+      <div class="typing-dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+  </div>
+  <div class="input-container">
+    <mat-card class="input-wrapper">
+      <mat-form-field class="message-input-field">
+        <textarea matInput
+                  #messageInput
+                  [(ngModel)]="userMessage"
+                  (keypress)="onKeyPress($event)"
+                  placeholder="Type your message..."
+                  [disabled]="isSending"
+                  maxlength="500"
+                  rows="1"></textarea>
+      </mat-form-field>
+      <button mat-fab
+              color="primary"
+              class="send-button"
+              (click)="sendMessage()"
+              [disabled]="!userMessage.trim() || isSending">
+        <mat-icon>send</mat-icon>
+      </button>
+    </mat-card>
   </div>
 </div>

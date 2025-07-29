@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ChatService {
-  private apiUrl = 'https://localhost:7057/api/Chat';
+  private apiUrl = 'https://1gqbf72l-7057.inc1.devtunnels.ms/api/Chat';
 
   constructor(private http: HttpClient) {}
 

@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
+import { ChatComponent } from './Component/chat/chat.component';
 
 @Component({
   selector: 'app-root',
-  imports: [],
+  standalone: true,
+  imports: [ChatComponent],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrls: ['./app.css']
 })
 export class App {
   protected title = 'meet-enayet-ui';
