@@ -1,83 +1,73 @@
-<!-- Background Particle Layer -->
-<div class="bg-particles"></div>
-
-<!-- Chat Container -->
+<!-- chat.component.html -->
 <div class="chat-container">
-
-  <!-- Header -->
-  <div class="chat-header">
-    <div class="ai-status">
-      <div class="status-indicator"></div>
-      <div>
-        <div class="ai-title">Enayet AI</div>
-        <div class="ai-subtitle">Software Developer • Online</div>
-      </div>
-    </div>
-    <button class="new-chat-button" (click)="startNewChat()">New Chat</button>
-  </div>
-
-  <!-- Message List -->
   <div class="messages-container" #messagesContainer>
     <div *ngFor="let message of messages; trackBy: trackByMessageId"
-         class="message"
-         [class.user]="message.isUser"
-         [class.ai]="!message.isUser"
-         [@slideIn]>
-      <div class="message-avatar">{{ message.isUser ? '🧑' : '🤖' }}</div>
-      <div class="message-content-wrapper">
-        <div class="message-content" [class.streaming-text]="message.isStreaming">
-          <div [innerHTML]="renderMarkdown(message.content)"></div>
-          <span *ngIf="message.isStreaming" class="cursor"></span>
-        </div>
-        <div class="message-actions" *ngIf="!message.isStreaming">
-          <button mat-icon-button (click)="copyMessage(message.content)" title="Copy">
-            <mat-icon>content_copy</mat-icon>
-          </button>
-          <button mat-icon-button (click)="rerunMessage(message)" title="Re-run">
-            <mat-icon>refresh</mat-icon>
-          </button>
-          <button mat-icon-button (click)="pinMessage(message)" title="Pin">
-            <mat-icon>push_pin</mat-icon>
-          </button>
-          <button mat-icon-button (click)="feedback(message, true)" title="Thumbs Up">
-            <mat-icon>thumb_up</mat-icon>
-          </button>
-          <button mat-icon-button (click)="feedback(message, false)" title="Thumbs Down">
-            <mat-icon>thumb_down</mat-icon>
-          </button>
+         class="message-wrapper"
+         [class.user-message]="message.isUser"
+         [class.ai-message]="!message.isUser">
+      <div class="message-avatar" *ngIf="!message.isUser">
+        <div class="avatar-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
         </div>
       </div>
-      <div class="message-timestamp">{{ message.timestamp | date:'shortTime' }}</div>
+      <div class="message-content" [class.streaming-text]="message.isStreaming">
+        <div class="message-bubble" 
+             [class.user-bubble]="message.isUser"
+             [class.ai-bubble]="!message.isUser">
+          <div class="message-text" [innerHTML]="renderMarkdown(message.content)"></div>
+          <span *ngIf="message.isStreaming" class="cursor"></span>
+        </div>
+      </div>
     </div>
-
-    <!-- Typing Indicator -->
-    <div *ngIf="isTyping" class="typing-indicator" [@slideIn]>
-      <div class="message-avatar">🤖</div>
-      <div class="typing-dots">
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
+    <div *ngIf="isTyping" class="message-wrapper ai-message typing-message">
+      <div class="message-avatar">
+        <div class="avatar-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="message-content">
+        <div class="message-bubble ai-bubble">
+          <div class="typing-indicator">
+            <div class="typing-dots">
+              <div class="dot"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+            </div>
+            <span class="typing-text">Analyzing data, please wait...</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-
-  <!-- Input Area -->
   <div class="input-container">
-    <mat-form-field class="message-input-field" appearance="fill">
-      <textarea matInput
-                #messageInput
-                [(ngModel)]="userMessage"
-                (keypress)="onKeyPress($event)"
-                placeholder="Type your message..."
-                [disabled]="isSending"
-                maxlength="500"
-                rows="1"></textarea>
-      <button mat-icon-button matSuffix
-              color="primary"
+    <div class="input-wrapper">
+      <button class="attach-btn" mat-icon-button>
+        <mat-icon>attach_file</mat-icon>
+      </button>
+      <div class="input-field">
+        <textarea 
+          #messageInput
+          [(ngModel)]="userMessage"
+          (keypress)="onKeyPress($event)"
+          placeholder="Ask, write or search for anything..."
+          [disabled]="isSending"
+          maxlength="500"
+          rows="1"></textarea>
+      </div>
+      <button class="send-button"
+              mat-icon-button
               (click)="sendMessage()"
               [disabled]="!userMessage.trim() || isSending">
         <mat-icon>send</mat-icon>
       </button>
-    </mat-form-field>
+    </div>
   </div>
 </div>

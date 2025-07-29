@@ -187,11 +187,5 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     this.sendMessage();
   }
 
-  pinMessage(message: ChatMessage): void {
-    console.log('Pinned:', message);
-  }
 
-  feedback(message: ChatMessage, positive: boolean): void {
-    console.log('Feedback:', positive ? 'Up' : 'Down', message);
-  }
 }
