@@ -55,26 +55,20 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     "Give me a 60‑second intro to Enayet",
   "What are your top technical skills?",
   "Summarize your experience with .NET and Clean Architecture",
-  "What did you build for Akij Air (B2B/B2C)?",
   "How did you integrate Sabre and Travelport?",
   "Explain a microservice you designed end‑to‑end",
   "How do you use Apache Kafka and why?",
   "Describe your work with TimescaleDB/PostgreSQL",
   "How did you implement AWS S3 logging and file management?",
-  "Show 3 flagship projects with your impact",
-  "What’s your approach to API design and versioning (REST/GraphQL)?",
   "How do you ensure reliability: testing, validation, error handling?",
   "Walk me through a tricky bug you solved and the outcome",
   "What recent R&D have you done?",
   "What are you learning right now?",
-  "How do you collaborate with CTOs and team leads?",
   "Share measurable achievements (performance, cost, time saved)",
   "What domains interest you next (OTA, fintech, etc.)?",
-  "Give me a recruiter‑friendly 30‑second pitch",
   "How can I contact you and download your resume?",
   "বাংলায় নিজের সম্পর্কে সংক্ষেপে বলুন",
-  "আপনার পছন্দের টেক স্ট্যাক কী এবং কেন?",
-  "Generate a short LinkedIn ‘About’ for me based on your profile"
+  "আপনার পছন্দের টেক স্ট্যাক কী এবং কেন?"
   ];
 
   // Enhanced animations
