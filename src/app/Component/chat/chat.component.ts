@@ -52,6 +52,12 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   currentStreamingMessage: ChatMessage | null = null;
   selectedTab: number = 0;
 
+  // Particle and bubble animations
+  particles: number[] = Array.from({length: 50}, (_, i) => i);
+  bubbles: number[] = Array.from({length: 20}, (_, i) => i);
+  shapes: number[] = Array.from({length: 10}, (_, i) => i);
+
+
   constructor(private chatService: ChatService, private sanitizer: DomSanitizer) {}
 
   ngOnInit() {
@@ -185,6 +191,34 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   rerunMessage(message: ChatMessage): void {
     this.userMessage = message.content;
     this.sendMessage();
+  }
+getParticlePosition(index: number): number {
+    return Math.random() * 100;
+  }
+
+  getParticleDuration(index: number): number {
+    return 15 + Math.random() * 10;
+  }
+
+  getBubblePosition(index: number): number {
+    return Math.random() * 100;
+  }
+
+  getBubbleDuration(index: number): number {
+    return 20 + Math.random() * 15;
+  }
+
+  getShapePosition(index: number): number {
+    return Math.random() * 100;
+  }
+
+  getShapeDuration(index: number): number {
+    return 30 + Math.random() * 10;
+  }
+
+  getShapeClass(index: number): string {
+    const shapes = ['triangle', 'square', 'diamond'];
+    return `shape ${shapes[Math.floor(Math.random() * shapes.length)]}`;
   }
 
 

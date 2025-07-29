@@ -1,75 +1,61 @@
 <!-- chat.component.html -->
 <div class="chat-container">
+  <!-- Multi-layer Background Animation System -->
+  <div class="background-animation">
+    <!-- Aurora Effect -->
+    <div class="aurora"></div>
+    
+    <!-- Floating Particles -->
+    <div class="particle" 
+         *ngFor="let particle of particles; let i = index"
+         [style.left.%]="getParticlePosition(i)"
+         [style.animation-delay.s]="-i * 0.5"
+         [style.animation-duration.s]="getParticleDuration(i)">
+    </div>
+    
+    <!-- Floating Bubbles -->
+    <div class="bubble" 
+         *ngFor="let bubble of bubbles; let i = index"
+         [style.left.%]="getBubblePosition(i)"
+         [style.animation-delay.s]="-i * 1.2"
+         [style.animation-duration.s]="getBubbleDuration(i)">
+    </div>
+    
+    <!-- Geometric Shapes -->
+    <div class="shape" 
+         *ngFor="let shape of shapes; let i = index"
+         [class]="getShapeClass(i)"
+         [style.left.%]="getShapePosition(i)"
+         [style.animation-delay.s]="-i * 2"
+         [style.animation-duration.s]="getShapeDuration(i)">
+    </div>
+  </div>
+
+  <!-- Header -->
   <div class="header">
     <span class="chat-title">Talk to Me (Enayet 🤖)</span>
     <button class="new-chat-btn" (click)="startNewChat()">New Chat</button>
   </div>
-  <div class="background-animation">
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-  </div>
+
+  <!-- Messages Container -->
   <div class="messages-container" #messagesContainer>
     <div *ngFor="let message of messages; trackBy: trackByMessageId"
          class="message-wrapper"
          [class.user-message]="message.isUser"
          [class.ai-message]="!message.isUser">
+      
+      <!-- AI Avatar -->
       <div class="message-avatar" *ngIf="!message.isUser">
         <div class="avatar-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke-linejoin="round"/>
+            <path d="M2 17L12 22L22 17" stroke-linejoin="round"/>
+            <path d="M2 12L12 17L22 12" stroke-linejoin="round"/>
           </svg>
         </div>
       </div>
+
+      <!-- Message Content -->
       <div class="message-content" [class.streaming-text]="message.isStreaming">
         <div class="message-bubble" 
              [class.user-bubble]="message.isUser"
@@ -79,13 +65,15 @@
         </div>
       </div>
     </div>
+
+    <!-- Typing Indicator -->
     <div *ngIf="isTyping" class="message-wrapper ai-message typing-message">
       <div class="message-avatar">
         <div class="avatar-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke-linejoin="round"/>
+            <path d="M2 17L12 22L22 17" stroke-linejoin="round"/>
+            <path d="M2 12L12 17L22 12" stroke-linejoin="round"/>
           </svg>
         </div>
       </div>
@@ -103,11 +91,18 @@
       </div>
     </div>
   </div>
+
+  <!-- Input Container -->
   <div class="input-container">
     <div class="input-wrapper">
-      <button class="attach-btn" mat-icon-button>
-        <mat-icon>attach_file</mat-icon>
+      <!-- Attach Button -->
+      <button class="attach-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21.44 11.05L12.25 20.24C11.12 21.37 9.69 22 8.2 22S5.28 21.37 4.15 20.24C3.02 19.11 2.39 17.68 2.39 16.19S3.02 13.27 4.15 12.14L13.34 2.95C14.47 1.82 15.9 1.19 17.39 1.19S20.31 1.82 21.44 2.95C22.57 4.08 23.2 5.51 23.2 7S22.57 9.92 21.44 11.05Z"/>
+        </svg>
       </button>
+
+      <!-- Input Field -->
       <div class="input-field">
         <textarea 
           #messageInput
@@ -118,11 +113,16 @@
           maxlength="500"
           rows="1"></textarea>
       </div>
+
+      <!-- Send Button -->
       <button class="send-button"
-              mat-icon-button
+              type="button"
               (click)="sendMessage()"
               [disabled]="!userMessage.trim() || isSending">
-        <mat-icon>send</mat-icon>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 2L11 13"/>
+          <path d="M22 2L15 22L11 13L2 9L22 2Z"/>
+        </svg>
       </button>
     </div>
   </div>
