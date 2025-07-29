@@ -6,7 +6,7 @@ import { ChatRequest } from '../Models/chat-request.model';
   providedIn: 'root'
 })
 export class ChatService {
-  private apiUrl = 'https://1gqbf72l-7057.inc1.devtunnels.ms/api/Chat';
+  private apiUrl = 'https://enayethossainresumeai.somee.com/api/Chat';
 
   constructor() {}
 
