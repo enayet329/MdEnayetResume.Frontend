@@ -52,7 +52,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   currentStreamingMessage: ChatMessage | null = null;
   selectedTab: number = 0;
   suggestions: string[] = [
-    "Give me a 60‑second intro to Enayet",
+  "Give me a 60‑second intro to Enayet",
   "What are your top technical skills?",
   "Summarize your experience with .NET and Clean Architecture",
   "How did you integrate Sabre and Travelport?",
@@ -60,13 +60,10 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   "How do you use Apache Kafka and why?",
   "Describe your work with TimescaleDB/PostgreSQL",
   "How did you implement AWS S3 logging and file management?",
-  "How do you ensure reliability: testing, validation, error handling?",
   "Walk me through a tricky bug you solved and the outcome",
   "What recent R&D have you done?",
   "What are you learning right now?",
-  "Share measurable achievements (performance, cost, time saved)",
   "What domains interest you next (OTA, fintech, etc.)?",
-  "How can I contact you and download your resume?",
   "বাংলায় নিজের সম্পর্কে সংক্ষেপে বলুন",
   "আপনার পছন্দের টেক স্ট্যাক কী এবং কেন?"
   ];
