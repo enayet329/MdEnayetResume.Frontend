@@ -1,50 +1,61 @@
-<!-- Enhanced Chat Component HTML -->
+<!-- chat.component.html -->
 <div class="chat-container">
-  <!-- Enhanced Multi-layer Background Animation System -->
+  <!-- Multi-layer Background Animation System -->
   <div class="background-animation">
-    <!-- Floating Particles with Enhanced Effects -->
+    <!-- Aurora Effect -->
+    <div class="aurora"></div>
+    
+    <!-- Floating Particles -->
     <div class="particle" 
          *ngFor="let particle of particles; let i = index"
          [style.left.%]="getParticlePosition(i)"
-         [style.animation-delay.s]="-i * 0.3"
-         [style.animation-duration]="getParticleDuration(i) + 's, ' + (getParticleDuration(i) * 0.3) + 's'"
-         [style.width.px]="getParticleSize(i)"
-         [style.height.px]="getParticleSize(i)">
+         [style.animation-delay.s]="-i * 0.5"
+         [style.animation-duration.s]="getParticleDuration(i)">
     </div>
     
-    <!-- Enhanced Floating Bubbles -->
+    <!-- Floating Bubbles -->
     <div class="bubble" 
          *ngFor="let bubble of bubbles; let i = index"
          [style.left.%]="getBubblePosition(i)"
+         [style.animation-delay.s]="-i * 1.2"
+         [style.animation-duration.s]="getBubbleDuration(i)">
+    </div>
+    
+    <!-- Geometric Shapes -->
+    <div class="shape" 
+         *ngFor="let shape of shapes; let i = index"
+         [class]="getShapeClass(i)"
+         [style.left.%]="getShapePosition(i)"
+         [style.animation-delay.s]="-i * 2"
+         [style.animation-duration.s]="getShapeDuration(i)">
+    </div>
+
+    <!-- Twinkling Stars -->
+    <div class="star" 
+         *ngFor="let star of stars; let i = index"
+         [style.left.%]="getStarPosition(i)"
          [style.animation-delay.s]="-i * 0.8"
-         [style.animation-duration]="getBubbleDuration(i) + 's, ' + (getBubbleDuration(i) * 0.4) + 's, ' + (getBubbleDuration(i) * 0.6) + 's'"
-         [style.width.px]="getBubbleSize(i)"
-         [style.height.px]="getBubbleSize(i)">
+         [style.animation-duration.s]="getStarDuration(i)">
     </div>
   </div>
 
-  <!-- Enhanced Header -->
+  <!-- Header -->
   <div class="header">
-    <div class="chat-title">
-      Talk to Me (Enayet 🤖)
-    </div>
-    <button class="new-chat-btn" (click)="startNewChat()">
-      <span>✨ New Chat</span>
-    </button>
+    <span class="chat-title">Talk to Me (Enayet 🤖)</span>
+    <button class="new-chat-btn" (click)="startNewChat()">New Chat</button>
   </div>
 
-  <!-- Enhanced Messages Container -->
+  <!-- Messages Container -->
   <div class="messages-container" #messagesContainer>
     <div *ngFor="let message of messages; trackBy: trackByMessageId"
          class="message-wrapper"
          [class.user-message]="message.isUser"
-         [class.ai-message]="!message.isUser"
-         [@slideIn]>
+         [class.ai-message]="!message.isUser">
       
-      <!-- Enhanced AI Avatar -->
+      <!-- AI Avatar -->
       <div class="message-avatar" *ngIf="!message.isUser">
         <div class="avatar-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke-linejoin="round"/>
             <path d="M2 17L12 22L22 17" stroke-linejoin="round"/>
             <path d="M2 12L12 17L22 12" stroke-linejoin="round"/>
@@ -52,60 +63,22 @@
         </div>
       </div>
 
-      <!-- Enhanced User Avatar -->
-      <div class="message-avatar" *ngIf="message.isUser">
-        <div class="avatar-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M20 21V19C20 16.7909 18.2091 15 16 15H8C5.79086 15 4 16.7909 4 19V21"/>
-            <circle cx="12" cy="7" r="4"/>
-          </svg>
-        </div>
-      </div>
-
-      <!-- Enhanced Message Content -->
+      <!-- Message Content -->
       <div class="message-content" [class.streaming-text]="message.isStreaming">
         <div class="message-bubble" 
              [class.user-bubble]="message.isUser"
              [class.ai-bubble]="!message.isUser">
-          
-          <!-- Message Actions (for AI messages) -->
-          <div class="message-actions" *ngIf="!message.isUser && !message.isStreaming">
-            <button class="action-btn" (click)="copyMessage(message.content)" title="Copy message">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                <path d="M5 15H4C2.89543 15 2 14.1046 2 13V4C2 2.89543 2.89543 2 4 2H13C14.1046 2 15 2.89543 15 4V5"/>
-              </svg>
-            </button>
-            <button class="action-btn" (click)="rerunMessage(message)" title="Regenerate response">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"/>
-                <path d="M12 7V12L15 15"/>
-              </svg>
-            </button>
-          </div>
-          
           <div class="message-text" [innerHTML]="renderMarkdown(message.content)"></div>
-          
-          <!-- Enhanced Streaming Cursor -->
-          <span *ngIf="message.isStreaming" class="cursor">
-            <svg width="12" height="16" viewBox="0 0 12 16" fill="currentColor">
-              <rect width="2" height="16" rx="1"/>
-            </svg>
-          </span>
-          
-          <!-- Message Timestamp -->
-          <div class="message-timestamp" *ngIf="!message.isStreaming">
-            {{ formatTimestamp(message.timestamp) }}
-          </div>
+          <span *ngIf="message.isStreaming" class="cursor"></span>
         </div>
       </div>
     </div>
 
-    <!-- Enhanced Typing Indicator -->
-    <div *ngIf="isTyping" class="message-wrapper ai-message typing-message" [@slideIn]>
+    <!-- Typing Indicator -->
+    <div *ngIf="isTyping" class="message-wrapper ai-message typing-message">
       <div class="message-avatar">
         <div class="avatar-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke-linejoin="round"/>
             <path d="M2 17L12 22L22 17" stroke-linejoin="round"/>
             <path d="M2 12L12 17L22 12" stroke-linejoin="round"/>
@@ -120,74 +93,44 @@
               <div class="dot"></div>
               <div class="dot"></div>
             </div>
-            <span class="typing-text">{{ getRandomTypingText() }}</span>
+            <span class="typing-text">Analyzing data, please wait...</span>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Enhanced Input Container -->
+  <!-- Input Container -->
   <div class="input-container">
     <div class="input-wrapper">
-      <!-- Enhanced Attach Button -->
-      <button class="attach-btn" title="Attach file">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <!-- Attach Button -->
+      <button class="attach-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21.44 11.05L12.25 20.24C11.12 21.37 9.69 22 8.2 22S5.28 21.37 4.15 20.24C3.02 19.11 2.39 17.68 2.39 16.19S3.02 13.27 4.15 12.14L13.34 2.95C14.47 1.82 15.9 1.19 17.39 1.19S20.31 1.82 21.44 2.95C22.57 4.08 23.2 5.51 23.2 7S22.57 9.92 21.44 11.05Z"/>
         </svg>
       </button>
 
-      <!-- Enhanced Input Field -->
+      <!-- Input Field -->
       <div class="input-field">
         <textarea 
           #messageInput
           [(ngModel)]="userMessage"
           (keypress)="onKeyPress($event)"
-          (input)="onInputChange()"
-          placeholder="Type your message here... ✨"
+          placeholder="Ask, write or search for anything..."
           [disabled]="isSending"
-          maxlength="2000"
+          maxlength="500"
           rows="1"></textarea>
       </div>
 
-      <!-- Character Counter -->
-      <div class="char-counter" *ngIf="userMessage.length > 0">
-        <span [class.warning]="userMessage.length > 1800">
-          {{ userMessage.length }}/2000
-        </span>
-      </div>
-
-      <!-- Enhanced Send Button -->
+      <!-- Send Button -->
       <button class="send-button"
               type="button"
               (click)="sendMessage()"
-              [disabled]="!userMessage.trim() || isSending"
-              [title]="isSending ? 'Sending...' : 'Send message'">
-        <svg *ngIf="!isSending" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              [disabled]="!userMessage.trim() || isSending">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M22 2L11 13"/>
           <path d="M22 2L15 22L11 13L2 9L22 2Z"/>
         </svg>
-        
-        <!-- Loading Spinner -->
-        <svg *ngIf="isSending" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="loading-spinner">
-          <circle cx="12" cy="12" r="10" stroke-dasharray="31.416" stroke-dashoffset="31.416">
-            <animate attributeName="stroke-dasharray" dur="2s" values="0 31.416;15.708 15.708;0 31.416" repeatCount="indefinite"/>
-            <animate attributeName="stroke-dashoffset" dur="2s" values="0;-15.708;-31.416" repeatCount="indefinite"/>
-          </circle>
-        </svg>
-      </button>
-    </div>
-    
-    <!-- Quick Actions -->
-    <div class="quick-actions" *ngIf="!isSending && userMessage.length === 0">
-      <button class="quick-action" (click)="insertQuickMessage('Tell me a joke! 😄')">
-        😄 Tell me a joke
-      </button>
-      <button class="quick-action" (click)="insertQuickMessage('What can you help me with?')">
-        🤔 What can you do?
-      </button>
-      <button class="quick-action" (click)="insertQuickMessage('Explain something complex in simple terms')">
-        🧠 Explain something
       </button>
     </div>
   </div>
