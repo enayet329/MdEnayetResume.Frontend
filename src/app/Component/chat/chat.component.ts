@@ -224,12 +224,41 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   }
 
   renderMarkdown(content: string): SafeHtml {
-    content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    content = content.replace(/\*(.*?)\*/g, '<em>$1</em>');
-    content = content.replace(/`(.*?)`/g, '<code>$1</code>');
-    content = content.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
-    content = content.replace(/\n/g, '<br>');
-    return this.sanitizer.bypassSecurityTrustHtml(content);
+    // Split content into lines and handle numbered points
+    const lines = content.split('\n').map(line => line.trim());
+    let formattedContent = '';
+    let inList = false;
+
+    lines.forEach(line => {
+      // Match lines starting with numbers like "1.", "2.", etc.
+      const pointMatch = line.match(/^(\d+)\.\s*(.*)$/);
+      if (pointMatch) {
+        if (!inList) {
+          formattedContent += '<ul style="padding-left: 20px; list-style-type: decimal;">';
+          inList = true;
+        }
+        formattedContent += `<li>${pointMatch[2]}</li>`;
+      } else {
+        if (inList) {
+          formattedContent += '</ul>';
+          inList = false;
+        }
+        // Handle other markdown (bold, italic, code)
+        line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        line = line.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        line = line.replace(/`(.*?)`/g, '<code>$1</code>');
+        line = line.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+        formattedContent += `<p>${line}</p>`;
+      }
+    });
+
+    if (inList) {
+      formattedContent += '</ul>';
+    }
+
+    // Replace newlines with <br> for non-list content
+    formattedContent = formattedContent.replace(/\n/g, '<br>');
+    return this.sanitizer.bypassSecurityTrustHtml(formattedContent);
   }
 
   copyMessage(content: string): void {
