@@ -58,9 +58,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     "What are your top technical skills?",
     "What recent R&D have you done?",
     "What are you learning right now?",
-    "What domains interest you next (OTA, fintech, etc.)?",
-    "বাংলায় নিজের সম্পর্কে সংক্ষেপে বলুন",
-    "আপনার পছন্দের টেক স্ট্যাক কী এবং কেন?"
+    "What domains interest you next (OTA, fintech, etc.)?"
   ];
   private messageUpdateSubject = new Subject<string>();
   particleStyles: { left: string, duration: string, delay: string }[] = [];
