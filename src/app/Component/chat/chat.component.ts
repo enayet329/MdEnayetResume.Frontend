@@ -1,8 +1,7 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked, HostListener, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChatService } from '../../Services/chat.service';
-import { ChatRequest } from '../../Models/chat-request.model';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,6 +9,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 interface ChatMessage {
   id: string;
@@ -61,14 +62,52 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     "বাংলায় নিজের সম্পর্কে সংক্ষেপে বলুন",
     "আপনার পছন্দের টেক স্ট্যাক কী এবং কেন?"
   ];
+  private messageUpdateSubject = new Subject<string>();
+  particleStyles: { left: string, duration: string, delay: string }[] = [];
+  bubbleStyles: { left: string, duration: string, delay: string }[] = [];
+  shapeStyles: { left: string, duration: string, delay: string, class: string }[] = [];
+  starStyles: { left: string, duration: string, delay: string }[] = [];
 
-  // Enhanced animations
-  particles: number[] = Array.from({length: 60}, (_, i) => i);
-  bubbles: number[] = Array.from({length: 25}, (_, i) => i);
-  shapes: number[] = Array.from({length: 15}, (_, i) => i);
-  stars: number[] = Array.from({length: 50}, (_, i) => i);
+  constructor(
+    private chatService: ChatService,
+    private sanitizer: DomSanitizer,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone
+  ) {
+    this.messageUpdateSubject.pipe(debounceTime(20)).subscribe(chunk => {
+      console.log('Received chunk:', chunk);
+      if (this.currentStreamingMessage) {
+        this.currentStreamingMessage.content += chunk;
+        this.ngZone.run(() => {
+          this.scrollToBottom();
+          this.cdr.detectChanges();
+        });
+      }
+    });
 
-  constructor(private chatService: ChatService, private sanitizer: DomSanitizer) {}
+    // Precompute styles for particles, bubbles, shapes, and stars
+    this.particleStyles = Array.from({ length: 60 }, (_, i) => ({
+      left: `${Math.random() * 100}%`,
+      duration: `${12 + Math.random() * 12}s`,
+      delay: `-${i * 0.5}s`
+    }));
+    this.bubbleStyles = Array.from({ length: 25 }, (_, i) => ({
+      left: `${Math.random() * 100}%`,
+      duration: `${18 + Math.random() * 18}s`,
+      delay: `-${i * 1.2}s`
+    }));
+    this.shapeStyles = Array.from({ length: 15 }, (_, i) => ({
+      left: `${Math.random() * 100}%`,
+      duration: `${25 + Math.random() * 15}s`,
+      delay: `-${i * 2}s`,
+      class: `shape ${['triangle', 'square', 'diamond'][Math.floor(Math.random() * 3)]}`
+    }));
+    this.starStyles = Array.from({ length: 50 }, (_, i) => ({
+      left: `${Math.random() * 100}%`,
+      duration: `${3 + Math.random() * 4}s`,
+      delay: `-${i * 0.8}s`
+    }));
+  }
 
   ngOnInit() {
     this.messages.push({
@@ -128,43 +167,52 @@ export class ChatComponent implements OnInit, AfterViewChecked {
       isStreaming: true
     };
 
-    setTimeout(() => {
-      this.isTyping = false;
-      this.messages.push(aiMsg);
-      this.currentStreamingMessage = aiMsg;
-      this.scrollToBottom();
-    }, 800);
+    this.messages.push(aiMsg);
+    this.currentStreamingMessage = aiMsg;
+    this.scrollToBottom();
+    this.cdr.detectChanges();
 
-    const req: ChatRequest = { userMessage: userMessageContent };
-    this.chatService.streamChat(req).subscribe({
-      next: (chunk: string) => {
-        if (this.currentStreamingMessage) {
-          this.currentStreamingMessage.content += chunk;
-          this.scrollToBottom();
-        }
-      },
-      error: (err) => {
-        console.error('Chat error:', err);
-        if (this.currentStreamingMessage) {
-          this.currentStreamingMessage.content = '⚠️ Sorry, something went wrong, vai. Try again! 😅';
-          this.currentStreamingMessage.isStreaming = false;
-        }
-        this.isSending = false;
-        this.isTyping = false;
-        this.currentStreamingMessage = null;
-      },
-      complete: () => {
-        if (this.currentStreamingMessage) {
-          this.currentStreamingMessage.isStreaming = false;
-        }
-        this.isSending = false;
-        this.currentStreamingMessage = null;
-        setTimeout(() => {
-          if (this.messageInput) {
-            this.messageInput.nativeElement.focus();
+    const req = { userMessage: userMessageContent };
+    this.ngZone.runOutsideAngular(() => {
+      this.chatService.streamChat(req).subscribe({
+        next: (chunk: string) => {
+          if (chunk) {
+            this.messageUpdateSubject.next(chunk);
           }
-        }, 100);
-      }
+        },
+        error: (err) => {
+          this.ngZone.run(() => {
+            console.error('Chat error:', err);
+            if (this.currentStreamingMessage) {
+              this.currentStreamingMessage.content = '⚠️ Sorry, something went wrong, vai. Try again! 😅';
+              this.currentStreamingMessage.isStreaming = false;
+            }
+            this.isSending = false;
+            this.isTyping = false;
+            this.currentStreamingMessage = null;
+            this.scrollToBottom();
+            this.cdr.detectChanges();
+          });
+        },
+        complete: () => {
+          this.ngZone.run(() => {
+            console.log('Stream completed');
+            if (this.currentStreamingMessage) {
+              this.currentStreamingMessage.isStreaming = false;
+            }
+            this.isSending = false;
+            this.isTyping = false;
+            this.currentStreamingMessage = null;
+            this.scrollToBottom();
+            this.cdr.detectChanges();
+            setTimeout(() => {
+              if (this.messageInput) {
+                this.messageInput.nativeElement.focus();
+              }
+            }, 100);
+          });
+        }
+      });
     });
   }
 
@@ -202,6 +250,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     this.isSending = false;
     this.currentStreamingMessage = null;
     this.selectedTab = 0;
+    this.cdr.detectChanges();
     setTimeout(() => {
       if (this.messageInput) {
         this.messageInput.nativeElement.focus();
@@ -219,49 +268,12 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     this.sendMessage();
   }
 
-  getParticlePosition(index: number): number {
-    return Math.random() * 100;
-  }
-
-  getParticleDuration(index: number): number {
-    return 12 + Math.random() * 12;
-  }
-
-  getBubblePosition(index: number): number {
-    return Math.random() * 100;
-  }
-
-  getBubbleDuration(index: number): number {
-    return 18 + Math.random() * 18;
-  }
-
-  getShapePosition(index: number): number {
-    return Math.random() * 100;
-  }
-
-  getShapeDuration(index: number): number {
-    return 25 + Math.random() * 15;
-  }
-
-  getShapeClass(index: number): string {
-    const shapes = ['triangle', 'square', 'diamond'];
-    return `shape ${shapes[Math.floor(Math.random() * shapes.length)]}`;
-  }
-
-  getStarPosition(index: number): number {
-    return Math.random() * 100;
-  }
-
-  getStarDuration(index: number): number {
-    return 3 + Math.random() * 4;
-  }
-
   adjustForKeyboard(): void {
     setTimeout(() => {
       this.scrollToBottom();
       if (this.messageInput) {
         this.messageInput.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
       }
-    }, 300); // Delay to allow keyboard to open
+    }, 300);
   }
 }

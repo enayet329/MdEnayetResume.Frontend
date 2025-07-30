@@ -6,35 +6,35 @@
     
     <!-- Floating Particles -->
     <div class="particle" 
-         *ngFor="let particle of particles; let i = index"
-         [style.left.%]="getParticlePosition(i)"
-         [style.animation-delay.s]="-i * 0.5"
-         [style.animation-duration.s]="getParticleDuration(i)">
+         *ngFor="let particle of particleStyles; let i = index"
+         [style.left]="particle.left"
+         [style.animationDelay]="particle.delay"
+         [style.animationDuration]="particle.duration">
     </div>
     
     <!-- Floating Bubbles -->
     <div class="bubble" 
-         *ngFor="let bubble of bubbles; let i = index"
-         [style.left.%]="getBubblePosition(i)"
-         [style.animation-delay.s]="-i * 1.2"
-         [style.animation-duration.s]="getBubbleDuration(i)">
+         *ngFor="let bubble of bubbleStyles; let i = index"
+         [style.left]="bubble.left"
+         [style.animationDelay]="bubble.delay"
+         [style.animationDuration]="bubble.duration">
     </div>
     
     <!-- Geometric Shapes -->
     <div class="shape" 
-         *ngFor="let shape of shapes; let i = index"
-         [class]="getShapeClass(i)"
-         [style.left.%]="getShapePosition(i)"
-         [style.animation-delay.s]="-i * 2"
-         [style.animation-duration.s]="getShapeDuration(i)">
+         *ngFor="let shape of shapeStyles; let i = index"
+         [ngClass]="shape.class"
+         [style.left]="shape.left"
+         [style.animationDelay]="shape.delay"
+         [style.animationDuration]="shape.duration">
     </div>
 
     <!-- Twinkling Stars -->
     <div class="star" 
-         *ngFor="let star of stars; let i = index"
-         [style.left.%]="getStarPosition(i)"
-         [style.animation-delay.s]="-i * 0.8"
-         [style.animation-duration.s]="getStarDuration(i)">
+         *ngFor="let star of starStyles; let i = index"
+         [style.left]="star.left"
+         [style.animationDelay]="star.delay"
+         [style.animationDuration]="star.duration">
     </div>
   </div>
 
@@ -115,7 +115,7 @@
       <!-- Attach Button -->
       <button class="attach-btn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21.44 11.05L12.25 20.24C11.12 21.37 9.69 22 8.2 22S5.28 21.37 4.15 20.24C3.02 19.11 2.39 17.68 2.39 16.19S3.02 13.27 4.15 12.14L13.34 2.95C14.47 1.82 15.9 1.19 17.39 1.19S20.31 1.82 21.44 2.95C22.57 4.08 23.2 5.51 23.2 7S22.57 9.92 21.44 11.05Z"/>
+          <path d="M21.44 11.05L12.25 20.24C11.12 21.37 9.69 22 8.2 22S5.28 21.37 4.15 20.24C3.02 19.11 2.39 17.68 2.39 16.19S3.02 13.27 4.15 12.14L13.34 2.95C14.47 1.82 15.90 1.19 17.39 1.19S20.31 1.82 21.44 2.95C22.57 4.08 23.2 5.51 23.2 7S22.57 9.92 21.44 11.05Z"/>
         </svg>
       </button>
 
